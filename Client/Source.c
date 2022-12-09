@@ -7,9 +7,9 @@ int main()
 {
     system("chcp 1251 > null");
     LPSTR lpstrPipeName = L"\\\\.\\pipe\\MyPipe"; // имя канала (такое же, как и на севере)
-    HANDLE hNamePipe;
+    HANDLE hNamePipe; // дескриптор файла
     BOOL flag_otvet = TRUE;
-    char message[SIZE_BUFFER];
+    char message[SIZE_BUFFER]; // массив симвролов
     DWORD actual_written; // сколько на самом деле было записано байт
     LPWSTR buffer = &message; // строковая переменая, значение которой записывается в канал
     DWORD actual_readen; // сколько на самом деле было прочитано байт
@@ -41,49 +41,50 @@ int main()
         }
         else
         {
-            //чтение сообщений
-            LPSTR message = calloc(SIZE_BUFFER, sizeof(CHAR));
-            if (flag_otvet)
-            {
-                printf("Сообщение: ");
-                gets(message);
-                WriteFile(hNamePipe, message, SIZE_BUFFER, NULL, NULL);
-                flag_otvet = FALSE;
-            }
-            free(message);
-
-            message = calloc(SIZE_BUFFER, sizeof(CHAR));
-            if (ReadFile(hNamePipe, message, SIZE_BUFFER, NULL, NULL))
-            {
-                printf("Сервер: %s\n", message);
-                flag_otvet = TRUE;
-            }
-            free(message);
-
-
+            ////чтение сообщений
+            //LPSTR message = calloc(SIZE_BUFFER, sizeof(CHAR));
             //if (flag_otvet)
             //{
-            //    printf("\nВведите число для сервера:\n");
+            //    printf("Сообщение: ");
             //    gets(message);
-            //    buffer = &message;
-            //    WriteFile(hNamePipe, buffer, SIZE_BUFFER, &actual_written, NULL); // запись в канал
+            //    WriteFile(hNamePipe, message, SIZE_BUFFER, NULL, NULL);
             //    flag_otvet = FALSE;
-
             //}
-            ////читать с сервера
-            //SuccessRead = ReadFile(hNamePipe, buffer, SIZE_BUFFER, &actual_readen, NULL);
-            //if (SuccessRead)
+            //free(message);
+
+            //message = calloc(SIZE_BUFFER, sizeof(CHAR));
+            //if (ReadFile(hNamePipe, message, SIZE_BUFFER, NULL, NULL))
             //{
-            //    printf("\nОтвет:\n");
-            //    printf(buffer);
-            //    printf("\n");
+            //    printf("Сервер: %s\n", message);
             //    flag_otvet = TRUE;
             //}
+            //free(message);
+
+
+            if (flag_otvet)
+            {
+                printf("\nВведите число для сервера:\n");
+                gets(message);
+                buffer = &message;
+                WriteFile(hNamePipe, buffer, SIZE_BUFFER, &actual_written, NULL); // запись в канал
+                flag_otvet = FALSE;
+
+            }
+            //читать с серваера
+            SuccessRead = ReadFile(hNamePipe, buffer, SIZE_BUFFER, &actual_readen, NULL);
+            if (SuccessRead)
+            {
+                printf("\nОтвет:\n");
+                printf(buffer);
+                printf("\n");
+                flag_otvet = TRUE;
+            }
         }
 
 
         Sleep(100);
         CloseHandle(hNamePipe);
     }
-}
 
+
+}
